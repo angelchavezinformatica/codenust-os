@@ -22,76 +22,122 @@ extern "C" fn keyboard_interrupt_handler() {
     unsafe {
         let scancode = inb(0x60);
 
-        // Prefijo extendido: marca y termina (pero no olvides EOI)
+        if handle_prefix(scancode) {
+            return;
+        }
+        if handle_shift(scancode) {
+            return;
+        }
+        if handle_ctrl(scancode) {
+            return;
+        }
+        if handle_release(scancode) {
+            return;
+        }
+        if handle_special_keys(scancode) {
+            return;
+        }
+
+        handle_printable(scancode);
+
+        send_eoi();
+        core::arch::asm!("sti");
+    }
+}
+
+/// Maneja el prefijo 0xE0
+fn handle_prefix(scancode: u8) -> bool {
+    unsafe {
         if scancode == 0xE0 {
             E0_PREFIX = true;
-            send_eoi(); // avisar al PIC
+            send_eoi();
             core::arch::asm!("sti");
-            return;
+            true
+        } else {
+            false
         }
+    }
+}
 
-        // Shift pressed / released (hacemos EOI antes de salir)
+/// Manejo de Shift
+fn handle_shift(scancode: u8) -> bool {
+    unsafe {
         match scancode {
             0x2A | 0x36 => {
-                // make (Shift down)
                 SHIFT_DOWN = true;
-                send_eoi();
-                core::arch::asm!("sti");
-                return;
             }
             0xAA | 0xB6 => {
-                // break (Shift up)
                 SHIFT_DOWN = false;
-                send_eoi();
-                core::arch::asm!("sti");
-                return;
             }
-            _ => {}
+            _ => return false,
         }
 
-        // Manejo de Ctrl (soporta Right Ctrl con prefijo E0)
+        send_eoi();
+        core::arch::asm!("sti");
+    }
+    true
+}
+
+/// Manejo de Ctrl (izq/der con prefijo E0)
+unsafe fn handle_ctrl(scancode: u8) -> bool {
+    unsafe {
         match (E0_PREFIX, scancode) {
-            (false, 0x1D) => CTRL_DOWN = true,  // Left Ctrl make
-            (false, 0x9D) => CTRL_DOWN = false, // Left Ctrl break
-            (true, 0x1D) => CTRL_DOWN = true,   // Right Ctrl make (E0 1D)
-            (true, 0x9D) => CTRL_DOWN = false,  // Right Ctrl break (E0 9D)
-            _ => {}
+            (false, 0x1D) => CTRL_DOWN = true,
+            (false, 0x9D) => CTRL_DOWN = false,
+            (true, 0x1D) => CTRL_DOWN = true,
+            (true, 0x9D) => CTRL_DOWN = false,
+            _ => return false,
         }
-
-        // ya consumimos el prefijo
         E0_PREFIX = false;
+        send_eoi();
+        core::arch::asm!("sti");
+    }
+    true
+}
 
-        // Si es liberación genérica (make | 0x80) ignoramos (pero avisamos EOI)
-        if scancode & 0x80 != 0 {
+/// Ignora liberaciones genéricas (bit 7 en 1)
+unsafe fn handle_release(scancode: u8) -> bool {
+    if scancode & 0x80 != 0 {
+        unsafe {
             send_eoi();
             core::arch::asm!("sti");
-            return;
         }
+        true
+    } else {
+        false
+    }
+}
 
-        // Enter
-        if scancode == 0x1C {
-            println!();
-            let input_str = core::str::from_utf8_unchecked(&INPUT_BUFFER[..INPUT_LEN]);
-            process_input(input_str);
-            INPUT_LEN = 0;
-            send_eoi();
-            core::arch::asm!("sti");
-            return;
-        }
-
-        // Backspace
-        if scancode == 0x0E {
-            if INPUT_LEN > 0 {
-                INPUT_LEN -= 1;
-                INPUT_BUFFER[INPUT_LEN] = 0;
-                WRITER.lock().backspace();
+/// Manejo de Enter y Backspace
+fn handle_special_keys(scancode: u8) -> bool {
+    unsafe {
+        match scancode {
+            0x1C => {
+                // Enter
+                println!();
+                let input_str = core::str::from_utf8_unchecked(&INPUT_BUFFER[..INPUT_LEN]);
+                process_input(input_str);
+                INPUT_LEN = 0;
             }
-            send_eoi();
-            core::arch::asm!("sti");
-            return;
+            0x0E => {
+                // Backspace
+                if INPUT_LEN > 0 {
+                    INPUT_LEN -= 1;
+                    INPUT_BUFFER[INPUT_LEN] = 0;
+                    WRITER.lock().backspace();
+                }
+            }
+            _ => return false,
         }
+        send_eoi();
+        core::arch::asm!("sti");
+    }
+    true
+}
 
-        // Tecla normal: escoger tabla según SHIFT_DOWN
+/// Manejo de teclas imprimibles (con Shift)
+fn handle_printable(scancode: u8) {
+    unsafe {
         let ch_opt = if SHIFT_DOWN {
             SCANCODE_MAP_SHIFT[scancode as usize]
         } else {
@@ -105,10 +151,6 @@ extern "C" fn keyboard_interrupt_handler() {
                 print!("{}", ch as char);
             }
         }
-
-        // FIN: avisar EOI y reactivar interrupciones
-        send_eoi();
-        core::arch::asm!("sti");
     }
 }
 
