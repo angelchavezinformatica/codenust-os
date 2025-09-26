@@ -2,8 +2,8 @@ use core::fmt;
 use lazy_static::lazy_static;
 use spin::Mutex;
 
-use crate::screen::vga::buffer::{BUFFER_HEIGHT, BUFFER_WIDTH, Buffer, ScreenChar};
-use crate::screen::vga::color::ColorCode;
+use super::buffer::{BUFFER_HEIGHT, BUFFER_WIDTH, Buffer, ScreenChar};
+use super::color::{Color, ColorCode};
 
 #[allow(dead_code)]
 pub struct Writer {
@@ -99,10 +99,7 @@ impl fmt::Write for Writer {
 lazy_static! {
     pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
         column_position: 0,
-        color_code: ColorCode::new(
-            crate::screen::vga::color::Color::Yellow,
-            crate::screen::vga::color::Color::Black
-        ),
+        color_code: ColorCode::new(Color::Yellow, Color::Black),
         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
     });
 }

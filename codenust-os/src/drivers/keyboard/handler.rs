@@ -1,11 +1,11 @@
 use core::arch::asm;
 
 use super::scancodes::SCANCODE_MAP;
-use crate::arch_x86_64::pic::send_eoi;
+use crate::arch::x86_64::pic::send_eoi;
+use crate::kernel::cli::process_input;
 use crate::print;
-use crate::programs::process_input;
 use crate::{
-    arch_x86_64::{
+    arch::x86_64::{
         idt::register_handler,
         pic::{inb, outb},
     },

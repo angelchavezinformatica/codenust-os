@@ -2,16 +2,17 @@
 #![no_main]
 
 use core::panic::PanicInfo;
-mod arch_x86_64;
+mod arch;
+mod drivers;
+mod kernel;
 mod programs;
-mod screen;
 
-use arch_x86_64::{
+use arch::x86_64::{
     idt::init_idt,
     pic::{enable_keyboard_irq, remap_pic},
 };
 
-use crate::screen::keyboard::handler::init_keyboard;
+use crate::drivers::keyboard::handler::init_keyboard;
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
