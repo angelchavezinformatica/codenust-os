@@ -3,7 +3,7 @@ use core::arch::asm;
 use super::scancodes::SCANCODE_MAP;
 use crate::arch_x86_64::pic::send_eoi;
 use crate::print;
-use crate::programs::cli::process_input;
+use crate::programs::process_input;
 use crate::{
     arch_x86_64::{
         idt::register_handler,

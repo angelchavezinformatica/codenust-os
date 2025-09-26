@@ -1,7 +1,6 @@
 #![no_std]
 #![no_main]
 
-use core::hint::spin_loop;
 use core::panic::PanicInfo;
 mod arch_x86_64;
 mod programs;
@@ -27,6 +26,7 @@ fn print_banner() {
     println!(" | |    / _ \\ / _` |/ _ \\ '_ \\| | | / __| __| |  | |\\___ \\ ");
     println!(" | |___| (_) | (_| |  __/ | | | |_| \\__ \\ |_| |__| |____) |");
     println!("  \\_____\\___/ \\__,_|\\___|_| |_|\\__,_|___/\\__|\\____/|_____/ ");
+    println!();
 }
 
 #[unsafe(no_mangle)]
