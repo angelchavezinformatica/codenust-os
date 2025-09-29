@@ -1,11 +1,13 @@
 pub mod clear;
 pub mod echo;
 pub mod help;
+pub mod mailbox;
 pub mod reset;
 
 use crate::programs::clear::clear_program;
 use crate::programs::echo::echo_program;
 use crate::programs::help::help_command;
+use crate::programs::mailbox::mailbox_program;
 use crate::programs::reset::reset_command;
 
 pub struct Program {
@@ -29,6 +31,11 @@ pub static PROGRAMS: &[Program] = &[
         name: "help",
         entry: help_command,
         description: "Lists all available commands or shows details for one.",
+    },
+    Program {
+        name: "mb",
+        entry: mailbox_program,
+        description: "IPC message passing with named mailboxes",
     },
     Program {
         name: "reset",
