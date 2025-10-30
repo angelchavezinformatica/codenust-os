@@ -1,0 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap');
+@import 'tailwindcss';
+
+body {
+  @apply bg-black text-lime-500;
+  font-family: 'Fira Code', monospace;
+  font-size: 1.2rem;
+  font-weight: 400;
+}
