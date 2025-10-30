@@ -6,6 +6,8 @@ from typing import List
 
 from .calc import calc_program
 from .echo import echo_command
+from .mailbox import mailbox_command
+from .process import process_command
 from .whoami import whoami_command
 from .set_user import set_user_command
 
@@ -18,6 +20,8 @@ context = {
 actions = {
     "calc": calc_program,
     "echo": echo_command,
+    "mb": mailbox_command,
+    "process": process_command,
     "whoami": whoami_command,
     "set-user": set_user_command,
 }

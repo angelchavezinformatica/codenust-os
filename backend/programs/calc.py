@@ -1,8 +1,9 @@
 """Calculator Process"""
 
 import ast
-import asyncio
 import operator
+
+from kernel.message_bus import message_bus
 from kernel.process_table import Process
 
 
@@ -12,11 +13,21 @@ class CalculatorProcess(Process):
     def __init__(self):
         super().__init__()
         self.running = True
+        self.name = 'Calculator'
 
     async def run(self):
         """Main loop (idle until work arrives)"""
-        # En un futuro, podría leer de un message bus
-        await asyncio.sleep(0.1)
+
+    async def handle_event(self, event_name: str, data: dict):
+        """Handle event"""
+        expression = data.get('message')
+        sender = data.get('sender')
+        calculated = await self.calculate(expression)
+
+        await message_bus.publish(sender, {
+            'message': f'Result: {calculated}',
+            'sender': event_name
+        })
 
     async def calculate(self, expression: str) -> float | str:
         """Evaluate safely a math expression"""

@@ -13,9 +13,14 @@ class Process(ABC):
 
     pid: int | None = None
     running: bool = True
+    name: str | None = None
 
     @abstractmethod
     async def run(self):
+        """Should be implemented"""
+
+    @abstractmethod
+    async def handle_event(self, event_name: str, data: dict):
         """Should be implemented"""
 
     def create_task(self, task: object):

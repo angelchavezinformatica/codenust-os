@@ -13,6 +13,12 @@ class MessageBus:
         """Suscribe process"""
         self.subscribers.setdefault(event_name, []).append(process)
 
+    def unsubscribe(self, event_name: str, process: Process):
+        """Unsubscribe process"""
+
+        processes = self.subscribers.get(event_name, [])
+        processes.remove(process)
+
     async def publish(self, event_name: str, data: dict):
         """Publish event"""
         for process in self.subscribers.get(event_name, []):

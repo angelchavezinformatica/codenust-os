@@ -2,6 +2,7 @@
 
 from typing import List
 from programs.calc import CalculatorProcess
+from kernel.message_bus import message_bus
 from kernel.process_table import process_table
 
 
@@ -27,4 +28,5 @@ Flags:
 
     calc = CalculatorProcess()
     process_table.add_process(calc)
+    message_bus.subscribe(str(calc.pid), calc)
     return f"Process {calc.pid} running in background (daemon mode)."
