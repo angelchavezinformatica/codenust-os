@@ -5,11 +5,14 @@ import shlex
 from typing import List
 
 from .calc import calc_program
+from .cat import cat_command
+from .cd import cd_command
 from .echo import echo_command
+from .ls import ls_command
 from .mailbox import mailbox_command
 from .process import process_command
-from .whoami import whoami_command
 from .set_user import set_user_command
+from .whoami import whoami_command
 
 context = {
     "user": 'user',
@@ -19,11 +22,14 @@ context = {
 
 actions = {
     "calc": calc_program,
+    "cat": cat_command,
+    "cd": cd_command,
     "echo": echo_command,
+    "ls": ls_command,
     "mb": mailbox_command,
     "process": process_command,
-    "whoami": whoami_command,
     "set-user": set_user_command,
+    "whoami": whoami_command,
 }
 
 

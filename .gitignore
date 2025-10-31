@@ -45,3 +45,5 @@ wheels/
 
 # Virtual environments
 .venv
+
+filesystem
