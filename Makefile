@@ -24,6 +24,7 @@ OBJS = \
   $K/sleeplock.o \
   $K/file.o \
   $K/pipe.o \
+  $K/fifo.o \
   $K/exec.o \
   $K/sysfile.o \
   $K/kernelvec.o \
@@ -136,6 +137,7 @@ UPROGS=\
 	$U/_mkdir\
 	$U/_rm\
 	$U/_sh\
+	$U/_fifotest\
 	$U/_stressfs\
 	$U/_usertests\
 	$U/_grind\

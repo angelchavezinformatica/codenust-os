@@ -7,6 +7,7 @@ int fork(void);
 int exit(int) __attribute__((noreturn));
 int wait(int*);
 int pipe(int*);
+int mkfifo(const char*);
 int write(int, const void*, int);
 int read(int, void*, int);
 int close(int);
@@ -24,6 +25,7 @@ int getpid(void);
 char* sys_sbrk(int,int);
 int pause(int);
 int uptime(void);
+void sleep(int n);
 
 // ulib.c
 int stat(const char*, struct stat*);

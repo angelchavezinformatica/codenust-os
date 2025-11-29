@@ -26,6 +26,7 @@ main()
     fileinit();      // file table
     virtio_disk_init(); // emulated hard disk
     userinit();      // first user process
+    fifo_init();     // init fifo
     __sync_synchronize();
     started = 1;
     printf("\x1b[2J\x1b[H");

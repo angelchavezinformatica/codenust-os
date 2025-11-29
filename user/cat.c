@@ -15,6 +15,7 @@ cat(int fd)
       exit(1);
     }
   }
+  
   if(n < 0){
     fprintf(2, "cat: read error\n");
     exit(1);

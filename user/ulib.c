@@ -158,3 +158,11 @@ char *
 sbrklazy(int n) {
   return sys_sbrk(n, SBRK_LAZY);
 }
+
+void
+sleep(int n)
+{
+  int t0 = uptime();
+  while(uptime() - t0 < n)
+    ;
+}

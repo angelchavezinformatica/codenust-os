@@ -503,3 +503,25 @@ sys_pipe(void)
   }
   return 0;
 }
+
+uint64
+sys_mkfifo(void)
+{
+  char path[MAXPATH];
+  struct inode *ip;
+
+  if(argstr(0, path, MAXPATH) < 0)
+    return -1;
+
+  begin_op();
+  ip = create(path, T_DEVICE, FIFO, 0);
+  if(ip == 0){
+    end_op();
+    return -1;
+  }
+  iunlockput(ip);
+  end_op();
+  return 0;
+}
+
+
