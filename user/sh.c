@@ -54,6 +54,75 @@ void panic(char*);
 struct cmd *parsecmd(char*);
 void runcmd(struct cmd*) __attribute__((noreturn));
 
+static char current_path[128] = "/";
+
+char*
+strcat(char *dest, const char *src)
+{
+  // Mover el puntero al final del string dest
+  int i = strlen(dest);
+  int j = 0;
+
+  // Copiar src a partir del final
+  while(src[j]) {
+    dest[i++] = src[j++];
+  }
+
+  // Asegurar el null terminator
+  dest[i] = '\0';
+
+  return dest;
+}
+
+void update_path(char *path, const char *arg) {
+  // Caso especial: cd /
+  if (strcmp(arg, "/") == 0) {
+    strcpy(path, "/");
+    return;
+  }
+
+  // case cd .
+  if (strcmp(arg, ".") == 0) {
+    return;
+  }
+
+  // case cd ..
+  if (strcmp(arg, "..") == 0) {
+    int len = strlen(path);
+
+    // ya estás en /
+    if (len == 1) {
+      return;
+    }
+
+    // borrar hasta la última /
+    for (int i = len - 1; i >= 0; i--) {
+      if (path[i] == '/') {
+        path[i] = 0;
+        break;
+      }
+    }
+
+    // si resulta vacío, significa que era "/algo"
+    if (path[0] == 0)
+      strcpy(path, "/");
+
+    return;
+  }
+
+  // Si llega acá, es un cd normal (ej: cd hola)
+  if (strcmp(path, "/") == 0) {
+    // Si estás en "/", solo agregas el nombre
+    path[0] = '/';
+    path[1] = '\0';
+    strcat(path, arg);
+  } else {
+    // Si estás en un path normal, agregas "/" + nombre
+    strcat(path, "/");
+    strcat(path, arg);
+  }
+}
+
 // Execute cmd.  Never returns.
 void
 runcmd(struct cmd *cmd)
@@ -134,6 +203,7 @@ runcmd(struct cmd *cmd)
 int
 getcmd(char *buf, int nbuf)
 {
+  printf("[lenovo@codenust_os %s]", current_path);
   write(2, "$ ", 2);
   memset(buf, 0, nbuf);
   gets(buf, nbuf);
@@ -164,10 +234,15 @@ main(void)
     if (*cmd == '\n') // is a blank command
       continue;
     if(cmd[0] == 'c' && cmd[1] == 'd' && cmd[2] == ' '){
-      // Chdir must be called by the parent, not the child.
-      cmd[strlen(cmd)-1] = 0;  // chop \n
-      if(chdir(cmd+3) < 0)
-        fprintf(2, "cannot cd %s\n", cmd+3);
+      cmd[strlen(cmd)-1] = 0;  // remove \n
+      char *dest = cmd+3;
+
+      if(chdir(dest) < 0){
+        fprintf(2, "cannot cd %s\n", dest);
+      } else {
+        // update path
+        update_path(current_path, dest);
+      }
     } else {
       if(fork1() == 0)
         runcmd(parsecmd(cmd));
