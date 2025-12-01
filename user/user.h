@@ -26,6 +26,9 @@ char* sys_sbrk(int,int);
 int pause(int);
 int uptime(void);
 void sleep(int n);
+int lamport_time(void);
+int lamport_tick(void);
+int lamport_recv(int msgclk);
 
 // ulib.c
 int stat(const char*, struct stat*);

@@ -138,6 +138,8 @@ UPROGS=\
 	$U/_rm\
 	$U/_sh\
 	$U/_fifotest\
+	$U/_lamporttest\
+	$U/_clock\
 	$U/_stressfs\
 	$U/_usertests\
 	$U/_grind\

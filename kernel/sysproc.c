@@ -7,6 +7,8 @@
 #include "proc.h"
 #include "vm.h"
 
+extern int lamport_clock;
+
 uint64
 sys_exit(void)
 {
@@ -106,4 +108,27 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+// Lamport clock
+uint64
+sys_lamport_time(void)
+{
+  return lamport_clock;
+}
+
+uint64
+sys_lamport_tick(void)
+{
+  lamport_clock++;
+  return lamport_clock;
+}
+
+uint64
+sys_lamport_recv(void)
+{
+  int msg_clock;
+  argint(0, &msg_clock);
+  lamport_clock = (msg_clock > lamport_clock ? msg_clock : lamport_clock) + 1;
+  return lamport_clock;
 }

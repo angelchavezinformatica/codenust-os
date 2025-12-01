@@ -246,6 +246,7 @@ main(void)
     } else {
       if(fork1() == 0)
         runcmd(parsecmd(cmd));
+      lamport_tick();
       wait(0);
     }
   }

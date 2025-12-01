@@ -43,3 +43,6 @@ entry("sbrk");
 entry("pause");
 entry("uptime");
 entry("mkfifo");
+entry("lamport_time");
+entry("lamport_tick");
+entry("lamport_recv");

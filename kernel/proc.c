@@ -6,6 +6,8 @@
 #include "proc.h"
 #include "defs.h"
 
+int lamport_clock = 0;
+
 struct cpu cpus[NCPU];
 
 struct proc proc[NPROC];
