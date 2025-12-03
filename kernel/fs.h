@@ -57,6 +57,6 @@ struct dinode {
 // character.
 struct dirent {
   ushort inum;
-  char name[DIRSIZ] __attribute__((nonstring));
+  char name[DIRSIZ];
 };
 

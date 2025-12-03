@@ -93,7 +93,6 @@ push_off(void)
   // disable interrupts to prevent an involuntary context
   // switch while using mycpu().
   intr_off();
-
   if(mycpu()->noff == 0)
     mycpu()->intena = old;
   mycpu()->noff += 1;

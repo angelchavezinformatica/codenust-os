@@ -18,7 +18,7 @@
 
 // Fetch the nth word-sized system call argument as a file descriptor
 // and return both the descriptor and the corresponding struct file.
-static int
+int
 argfd(int n, int *pfd, struct file **pf)
 {
   int fd;
@@ -36,7 +36,7 @@ argfd(int n, int *pfd, struct file **pf)
 
 // Allocate a file descriptor for the given file.
 // Takes over file reference from caller on success.
-static int
+int
 fdalloc(struct file *f)
 {
   int fd;
@@ -461,7 +461,7 @@ sys_exec(void)
       goto bad;
   }
 
-  int ret = kexec(path, argv);
+  int ret = exec(path, argv);
 
   for(i = 0; i < NELEM(argv) && argv[i] != 0; i++)
     kfree(argv[i]);
@@ -523,5 +523,3 @@ sys_mkfifo(void)
   end_op();
   return 0;
 }
-
-

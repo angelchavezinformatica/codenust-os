@@ -95,7 +95,7 @@ uservec:
         sfence.vma zero, zero
 
         # call usertrap()
-        jalr t0
+        jr t0
 
 .globl userret
 userret:

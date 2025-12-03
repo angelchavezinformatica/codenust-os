@@ -3,8 +3,20 @@
 #include "memlayout.h"
 #include "riscv.h"
 #include "defs.h"
+#include "time.h"
 
 volatile static int started = 0;
+
+static void
+printdate()
+{
+  struct timeval tv;
+  struct tm tm;
+  gettimeofday(&tv, NULL);
+  localtime_r(&tv.tv_sec, &tm);
+  printf("%04d/%02d/%02d %02d:%02d:%02d\n",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+}
 
 // start() jumps here in supervisor mode on all CPUs.
 void
@@ -24,9 +36,12 @@ main()
     binit();         // buffer cache
     iinit();         // inode table
     fileinit();      // file table
-    virtio_disk_init(); // emulated hard disk
-    userinit();      // first user process
     fifo_init();     // init fifo
+    virtio_disk_init(); // emulated hard disk
+    netinit();       // network stack
+    virtio_net_init(); // emulated network card
+    netrun();        // start networking
+    userinit();      // first user process
     __sync_synchronize();
     started = 1;
     printf("\x1b[2J\x1b[H");
@@ -36,6 +51,8 @@ main()
     printf(" | |    / _ \\ / _` |/ _ \\ '_ \\| | | / __| __| |  | |\\___ \\ \n");
     printf(" | |___| (_) | (_| |  __/ | | | |_| \\__ \\ |_| |__| |____) |\n");
     printf("  \\_____\\___/ \\__,_|\\___|_| |_|\\__,_|___/\\__|\\____/|_____/ \n");
+    printf("\n");
+    printdate();
     printf("\n");
   } else {
     while(started == 0)

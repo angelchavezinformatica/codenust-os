@@ -60,17 +60,13 @@ struct {
 int
 consolewrite(int user_src, uint64 src, int n)
 {
-  char buf[32]; // move batches from user space to uart.
-  int i = 0;
+  int i;
 
-  while(i < n){
-    int nn = sizeof(buf);
-    if(nn > n - i)
-      nn = n - i;
-    if(either_copyin(buf, user_src, src+i, nn) == -1)
+  for(i = 0; i < n; i++){
+    char c;
+    if(either_copyin(&c, user_src, src+i, 1) == -1)
       break;
-    uartwrite(buf, nn);
-    i += nn;
+    uartputc(c);
   }
 
   return i;
